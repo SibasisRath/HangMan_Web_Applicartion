@@ -1,0 +1,1252 @@
+/* ============================================================
+   game.css — Form or Fail: Corporate Bureaucracy Horror
+   Theme: Dark navy corporate, gold accents, paper chaos
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+/* ── RESET & BASE ───────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --navy-950: #020617;
+  --navy-900: #0f172a;
+  --navy-800: #1e293b;
+  --navy-700: #253447;
+  --navy-600: #334155;
+  --navy-500: #475569;
+  --gold-400: #fbbf24;
+  --gold-500: #f59e0b;
+  --gold-600: #d97706;
+  --red-500: #ef4444;
+  --red-600: #dc2626;
+  --green-400: #4ade80;
+  --green-500: #22c55e;
+  --blue-400: #60a5fa;
+  --blue-500: #3b82f6;
+  --white: #ffffff;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b;
+  --font-main: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 8px 48px rgba(0, 0, 0, 0.6);
+  --glow-gold: 0 0 20px rgba(251, 191, 36, 0.3);
+  --glow-red: 0 0 20px rgba(239, 68, 68, 0.3);
+  --glow-green: 0 0 20px rgba(74, 222, 128, 0.3);
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+html,
+body {
+  height: 100%;
+  font-family: var(--font-main);
+  background: var(--navy-950);
+  color: var(--white);
+  overflow-x: hidden;
+}
+
+body {
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(59, 130, 246, 0.06) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 20%, rgba(251, 191, 36, 0.05) 0%, transparent 50%),
+    var(--navy-950);
+  min-height: 100vh;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ── SCROLLBAR ──────────────────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--navy-900);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--navy-600);
+  border-radius: 3px;
+}
+
+/* ── GLOBAL GAME CONTAINER ──────────────────────────────────── */
+#game-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========================================================
+   SCREEN: START / MAIN MENU
+   ======================================================== */
+#screen-start {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.game-logo {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.logo-emoji {
+  font-size: 72px;
+  display: block;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 24px rgba(251, 191, 36, 0.6));
+}
+
+.logo-title {
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  font-weight: 900;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, var(--gold-400) 0%, var(--white) 50%, var(--gold-400) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.1;
+}
+
+.logo-tagline {
+  font-size: 1rem;
+  color: var(--gray-400);
+  margin-top: 6px;
+  letter-spacing: 0.5px;
+}
+
+/* .start-desc {
+  max-width: 600px;
+  text-align: center;
+  color: var(--gray-300);
+  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 28px;
+  padding: 20px 24px;
+  background: var(--navy-800);
+  border: 1px solid var(--navy-600);
+  border-radius: var(--radius);
+} */
+
+/* LEVEL GRID */
+.level-grid-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--gold-500);
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+/* ── CAROUSEL WRAPPER ───────────────────────────────────── */
+.level-carousel-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 860px;
+  margin-bottom: 28px;
+  overflow: hidden;           /* ← fixes the left-side leak */
+}
+
+/* Left & right fade edges */
+.level-carousel-fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 64px;
+  z-index: 2;
+  pointer-events: none;
+}
+.level-carousel-fade--left {
+  left: 0;
+  background: linear-gradient(to right, var(--navy-950) 0%, transparent 100%);
+}
+.level-carousel-fade--right {
+  right: 0;
+  background: linear-gradient(to left, var(--navy-950) 0%, transparent 100%);
+}
+
+/* ── SCROLL TRACK ───────────────────────────────────────── */
+#level-select-grid {
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+  width: 100%;
+  /* overflow hidden: JS controls all scrolling via scrollLeft */
+  overflow: hidden;
+  padding: 12px 20px 16px;
+  cursor: grab;
+  /* No CSS animation here — all movement is via JS requestAnimationFrame */
+}
+
+/* Grabbing cursor while drag is active */
+#level-select-grid.dragging { cursor: grabbing; }
+
+.level-card {
+  position: relative;
+  background: var(--navy-800);
+  border: 1px solid var(--navy-600);
+  border-radius: var(--radius);
+  padding: 18px 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  transition: all var(--transition);
+  text-align: center;
+  overflow: hidden;
+  /* Carousel-specific: fixed width, no shrink */
+  flex: 0 0 170px;
+  min-width: 170px;
+  /* Prevent card clicks being misread as drag starts */
+  user-select: none;
+}
+
+.level-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.05), transparent);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.level-card:hover {
+  border-color: var(--gold-500);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4), var(--glow-gold);
+}
+
+.level-card:hover::before {
+  opacity: 1;
+}
+
+.level-card.completed {
+  border-color: var(--green-500);
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.08), var(--navy-800));
+}
+
+.level-icon {
+  font-size: 2rem;
+  margin-bottom: 2px;
+}
+
+.level-num {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--gold-500);
+  text-transform: uppercase;
+}
+
+.level-title-card {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--gray-200);
+  line-height: 1.3;
+}
+
+.boss-badge {
+  background: linear-gradient(135deg, #7c3aed, #dc2626);
+  color: white;
+  font-size: 0.6rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  animation: pulse-badge 1.5s ease-in-out infinite;
+}
+
+.done-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--green-500);
+  color: white;
+  font-size: 0.7rem;
+  font-weight: 900;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.start-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ── STATS MINI BAR ─────────────────────────────────────────── */
+.mini-rules {
+  display: flex;
+  gap: 16px;
+  /* max-width: 580px; */
+  width: 100%;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.mini-rule {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--navy-800);
+  border: 1px solid var(--navy-600);
+  border-radius: 50px;
+  padding: 7px 16px;
+  font-size: 0.8rem;
+  color: var(--gray-300);
+}
+
+.mini-rule-icon {
+  font-size: 1rem;
+}
+
+/* ========================================================
+   SCREEN: GAME
+   ======================================================== */
+#screen-game {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* ── TOP HUD ─────────────────────────────────────────────────── */
+#game-hud {
+  background: var(--navy-900);
+  border-bottom: 1px solid var(--navy-700);
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(12px);
+}
+
+.hud-level-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+#current-level-label {
+  font-size: 0.95rem;
+  font-weight: 800;
+  color: var(--gold-400);
+  letter-spacing: -0.3px;
+}
+
+#level-subtitle {
+  font-size: 0.72rem;
+  color: var(--gray-500);
+  letter-spacing: 0.3px;
+}
+
+.hud-stats {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.hud-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.hud-stat-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--gray-500);
+}
+
+.hud-stat-value {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--white);
+  font-family: var(--font-mono);
+}
+
+#score-display {
+  color: var(--gold-400);
+}
+
+#streak-display {
+  color: var(--red-500);
+}
+
+#lives-display {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+}
+
+.heart {
+  font-size: 1.1rem;
+  transition: transform 0.2s;
+}
+
+.heart-lost {
+  opacity: 0.3;
+  filter: grayscale(1);
+}
+
+.score-flash {
+  animation: score-pop 0.5s ease;
+}
+
+/* ── GAME BODY (2 PANELS) ────────────────────────────────────── */
+#game-body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 0;
+  min-height: 0;
+}
+
+/* ── LEFT PANEL: CHARACTER + PAPER PILE ─────────────────────── */
+#paper-panel {
+  background: var(--navy-900);
+  border-right: 1px solid var(--navy-700);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+#paper-panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold-500), transparent);
+}
+
+.panel-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gray-500);
+}
+
+#hangman-svg-container {
+  width: 100%;
+  max-width: 340px;
+  height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Paper animation */
+.paper-item {
+  transform-origin: center center;
+}
+
+.paper-new {
+  animation: paper-drop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ── RIGHT PANEL: FORM FIELD ─────────────────────────────────── */
+#form-panel {
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  overflow-y: auto;
+}
+
+/* Scenario card */
+#scenario-card {
+  background: linear-gradient(135deg, var(--navy-800), rgba(251, 191, 36, 0.05));
+  border: 1px solid rgba(251, 191, 36, 0.2);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.scenario-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+
+#scenario-text {
+  font-size: 0.85rem;
+  color: var(--gray-300);
+  line-height: 1.65;
+  font-style: italic;
+}
+
+/* Progress */
+.field-progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#field-progress-track {
+  flex: 1;
+  height: 6px;
+  background: var(--navy-700);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+#field-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold-600), var(--gold-400));
+  border-radius: 3px;
+  width: 0%;
+  transition: width 0.5s ease;
+}
+
+#field-counter {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--gray-500);
+  white-space: nowrap;
+  font-family: var(--font-mono);
+}
+
+/* Field card */
+#field-card {
+  background: var(--navy-800);
+  border: 1px solid var(--navy-600);
+  border-radius: var(--radius);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  flex: 1;
+}
+
+.field-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+#field-label {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--white);
+}
+
+.difficulty-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+.diff-easy {
+  background: rgba(74, 222, 128, 0.15);
+  color: var(--green-400);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+}
+
+.diff-medium {
+  background: rgba(251, 191, 36, 0.15);
+  color: var(--gold-400);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+}
+
+.diff-hard {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Input area */
+#field-input-area {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#field-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--navy-900);
+  border: 2px solid var(--navy-600);
+  border-radius: var(--radius-sm);
+  color: var(--white);
+  font-size: 1rem;
+  font-family: var(--font-mono);
+  letter-spacing: 0.3px;
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+}
+
+#field-input::placeholder {
+  color: var(--gray-500);
+  font-family: var(--font-main);
+  letter-spacing: 0;
+}
+
+#field-input:focus {
+  border-color: var(--gold-500);
+  box-shadow: 0 0 0 3px rgba(251, 191, 36, 0.15);
+}
+
+.pw-wrap {
+  position: relative;
+}
+
+.pw-wrap #field-input {
+  padding-right: 48px;
+}
+
+.pw-toggle {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+  color: var(--gray-400);
+  padding: 4px;
+  transition: color var(--transition);
+}
+
+.pw-toggle:hover {
+  color: var(--gold-400);
+}
+
+/* Feedback */
+.field-feedback {
+  min-height: 28px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  transition: all var(--transition);
+}
+
+.fb-correct {
+  background: rgba(74, 222, 128, 0.1);
+  color: var(--green-400);
+  border: 1px solid rgba(74, 222, 128, 0.25);
+}
+
+.fb-wrong {
+  background: rgba(239, 68, 68, 0.1);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.25);
+}
+
+.fb-skip {
+  background: rgba(96, 165, 250, 0.1);
+  color: var(--blue-400);
+  border: 1px solid rgba(96, 165, 250, 0.25);
+}
+
+/* Hint box */
+#hint-box {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.08), rgba(251, 191, 36, 0.02));
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  position: relative;
+  animation: fadeIn 0.3s ease;
+}
+
+#hint-content {
+  font-size: 0.85rem;
+  color: var(--gold-400);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  font-family: var(--font-mono);
+}
+
+#btn-close-hint {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--gray-400);
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+/* Submit button and points */
+.field-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+#field-points {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--gray-500);
+  font-family: var(--font-mono);
+}
+
+/* ── LIFELINES PANEL ────────────────────────────────────────── */
+#lifelines-panel {
+  background: var(--navy-900);
+  border-top: 1px solid var(--navy-700);
+  padding: 12px 32px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.lifelines-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gray-500);
+  margin-right: 4px;
+}
+
+.lifeline-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  background: var(--navy-800);
+  border: 1px solid var(--navy-600);
+  border-radius: 50px;
+  color: var(--gray-300);
+  font-size: 0.8rem;
+  font-weight: 600;
+  font-family: var(--font-main);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.lifeline-btn:hover:not(:disabled) {
+  background: var(--navy-700);
+  border-color: var(--gold-500);
+  color: var(--gold-400);
+  box-shadow: var(--glow-gold);
+}
+
+.lifeline-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.ll-count {
+  background: var(--navy-700);
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: var(--gold-400);
+}
+
+/* ========================================================
+   BUTTONS (Global)
+   ======================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 28px;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 700;
+  font-family: var(--font-main);
+  cursor: pointer;
+  border: none;
+  transition: all var(--transition);
+  text-decoration: none;
+  letter-spacing: 0.3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.btn:hover::after {
+  opacity: 1;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold-600), var(--gold-400));
+  color: var(--navy-950);
+  box-shadow: 0 4px 18px rgba(251, 191, 36, 0.35);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 6px 28px rgba(251, 191, 36, 0.55);
+  transform: translateY(-1px);
+}
+
+.btn-secondary {
+  background: var(--navy-700);
+  color: var(--gray-200);
+  border: 1px solid var(--navy-600);
+}
+
+.btn-secondary:hover {
+  background: var(--navy-600);
+  border-color: var(--gray-500);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, var(--red-600), var(--red-500));
+  color: white;
+  box-shadow: 0 4px 18px rgba(239, 68, 68, 0.3);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #16a34a, var(--green-500));
+  color: white;
+  box-shadow: 0 4px 18px rgba(34, 197, 94, 0.3);
+}
+
+.btn-lg {
+  padding: 15px 36px;
+  font-size: 1rem;
+  border-radius: var(--radius);
+}
+
+.btn-sm {
+  padding: 8px 18px;
+  font-size: 0.8rem;
+}
+
+/* ========================================================
+   SCREEN: LEVEL COMPLETE
+   ======================================================== */
+#screen-level-complete,
+#screen-game-over,
+#screen-win {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+}
+
+.result-card {
+  background: var(--navy-800);
+  border: 1px solid var(--navy-600);
+  border-radius: var(--radius-lg);
+  padding: 48px 40px;
+  max-width: 520px;
+  width: 100%;
+  text-align: center;
+  box-shadow: var(--shadow-lg);
+  position: relative;
+  overflow: hidden;
+  animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.result-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+}
+
+.card-complete::before {
+  background: linear-gradient(90deg, var(--green-500), var(--blue-500));
+}
+
+.card-gameover::before {
+  background: linear-gradient(90deg, var(--red-600), var(--red-500));
+}
+
+.card-win::before {
+  background: linear-gradient(90deg, var(--gold-600), var(--gold-400), var(--gold-600));
+}
+
+.result-emoji {
+  font-size: 5rem;
+  margin-bottom: 16px;
+  display: block;
+  animation: bounce-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.result-title {
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.result-subtitle {
+  font-size: 0.95rem;
+  color: var(--gray-400);
+  margin-bottom: 28px;
+  line-height: 1.6;
+}
+
+.result-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 28px;
+  background: var(--navy-900);
+  border-radius: var(--radius-sm);
+  padding: 18px;
+}
+
+.result-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.result-stat-row span:first-child {
+  color: var(--gray-400);
+}
+
+.result-stat-row span:last-child {
+  font-weight: 700;
+  color: var(--white);
+  font-family: var(--font-mono);
+}
+
+.result-bonus {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--gold-400);
+  margin-bottom: 8px;
+}
+
+.result-perfect {
+  font-size: 0.95rem;
+  color: var(--green-400);
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.result-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── WIN confetti effect ──────────────────────────────────────── */
+.confetti-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* ========================================================
+   ANIMATIONS
+   ======================================================== */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes pulse-badge {
+
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(124, 58, 237, 0.4);
+  }
+
+  50% {
+    transform: scale(1.06);
+    box-shadow: 0 0 12px rgba(124, 58, 237, 0.6);
+  }
+}
+
+@keyframes paper-drop {
+  0% {
+    transform: translateY(-200px) rotate(-20deg) scale(0.8);
+    opacity: 0;
+  }
+
+  60% {
+    transform: translateY(10px) rotate(3deg) scale(1.02);
+    opacity: 1;
+  }
+
+  80% {
+    transform: translateY(-4px) rotate(-1deg) scale(0.99);
+  }
+
+  100% {
+    transform: translateY(0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounce-in {
+  0% {
+    transform: scale(0.3);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.15);
+  }
+
+  70% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  20% {
+    transform: translateX(-8px) rotate(-1deg);
+  }
+
+  40% {
+    transform: translateX(8px) rotate(1deg);
+  }
+
+  60% {
+    transform: translateX(-6px);
+  }
+
+  80% {
+    transform: translateX(6px);
+  }
+}
+
+@keyframes score-pop {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.35);
+    color: var(--green-400);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shake-panel {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  25% {
+    transform: translateX(-6px);
+  }
+
+  75% {
+    transform: translateX(6px);
+  }
+}
+
+.shake {
+  animation: shake 0.55s cubic-bezier(.36, .07, .19, .97) both;
+}
+
+.shake-panel {
+  animation: shake-panel 0.4s ease;
+}
+
+/* ── FLOATING PAPER BG DECORATION ───────────────────────────── */
+.bg-papers {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.bg-paper {
+  position: absolute;
+  width: 40px;
+  height: 52px;
+  background: rgba(241, 245, 249, 0.025);
+  border-radius: 3px;
+  border: 1px solid rgba(241, 245, 249, 0.06);
+  animation: drift linear infinite;
+}
+
+@keyframes drift {
+  0% {
+    transform: translateY(110vh) rotate(-15deg);
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 1;
+  }
+
+  100% {
+    transform: translateY(-10vh) rotate(20deg);
+    opacity: 0;
+  }
+}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  #game-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  #paper-panel {
+    border-right: none;
+    border-bottom: 1px solid var(--navy-700);
+    padding: 16px;
+  }
+
+  #hangman-svg-container {
+    height: 220px;
+  }
+
+  #form-panel {
+    padding: 20px 16px;
+  }
+
+  #lifelines-panel {
+    padding: 10px 16px;
+  }
+
+  .result-card {
+    padding: 32px 24px;
+  }
+
+  #game-hud {
+    padding: 8px 16px;
+  }
+
+  .hud-stats {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-title {
+    font-size: 2rem;
+  }
+
+  /* Level grid is now a flex carousel — no grid columns override needed on mobile */
+
+  .hud-stats {
+    gap: 8px;
+  }
+
+  .hud-stat-value {
+    font-size: 0.9rem;
+  }
+}

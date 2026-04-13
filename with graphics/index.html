@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Form or Fail — The Bureaucracy Hangman Game</title>
+  <meta name="description"
+    content="A Hangman-style form validation game. Fill forms correctly or get buried under rejected papers. 8 levels of increasing difficulty based on real-world field validation rules." />
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📄</text></svg>">
+  <link rel="stylesheet" href="css/game.css" />
+</head>
+
+<body>
+
+  <!-- Floating background paper decorations -->
+  <div class="bg-papers" aria-hidden="true">
+    <div class="bg-paper" style="left:5%; animation-duration:18s; animation-delay:0s; width:35px; height:46px;"></div>
+    <div class="bg-paper" style="left:18%; animation-duration:22s; animation-delay:3s; width:28px; height:38px;"></div>
+    <div class="bg-paper" style="left:35%; animation-duration:16s; animation-delay:6s; width:42px; height:56px;"></div>
+    <div class="bg-paper" style="left:55%; animation-duration:20s; animation-delay:1.5s; width:32px; height:42px;">
+    </div>
+    <div class="bg-paper" style="left:72%; animation-duration:24s; animation-delay:8s; width:38px; height:50px;"></div>
+    <div class="bg-paper" style="left:88%; animation-duration:19s; animation-delay:4s; width:26px; height:35px;"></div>
+  </div>
+
+  <div id="game-root">
+
+    <!-- ══════════════════════════════════════════════════════
+       SCREEN: START / MAIN MENU
+       ══════════════════════════════════════════════════════ -->
+    <main id="screen-start" role="main">
+
+      <div class="game-logo">
+        <span class="logo-emoji" aria-hidden="true">📄</span>
+        <h1 class="logo-title">Form or Fail</h1>
+        <p class="logo-tagline">A Bureaucracy Hangman Game &middot; Story Mode</p>
+      </div>
+
+      <div class="mini-rules" role="list" aria-label="Game rules">
+        <div class="mini-rule" role="listitem">
+          <span class="mini-rule-icon">❤️</span>
+          <span>6 Lives per level</span>
+        </div>
+        <div class="mini-rule" role="listitem">
+          <span class="mini-rule-icon">📄</span>
+          <span>Wrong = Paper piles up</span>
+        </div>
+        <div class="mini-rule" role="listitem">
+          <span class="mini-rule-icon">💡</span>
+          <span>3 Lifelines available</span>
+        </div>
+        <div class="mini-rule" role="listitem">
+          <span class="mini-rule-icon">🏆</span>
+          <span>8 Levels of chaos</span>
+        </div>
+      </div>
+
+      <!-- <p class="start-desc">
+      Welcome to Headquarters. Your task: fill in corporate forms — <em>correctly</em>.
+      Every wrong input gets stamped <strong>REJECTED</strong> and added to the pile.
+      6 papers and you're buried. Use your lifelines wisely.
+      <br/><br/>
+      <strong>Story Mode</strong> — progress through 8 themed levels from Login to the Boss Level.
+    </p> -->
+
+      <p class="level-grid-label" aria-hidden="true">— Choose a Level —</p>
+
+      <!-- Carousel wrapper: fade edges + scroll track -->
+      <div class="level-carousel-wrap">
+        <div class="level-carousel-fade level-carousel-fade--left" aria-hidden="true"></div>
+        <div id="level-select-grid" aria-label="Level selection grid" role="list"></div>
+        <div class="level-carousel-fade level-carousel-fade--right" aria-hidden="true"></div>
+      </div>
+
+      <div class="start-actions">
+        <button id="btn-start" class="btn btn-primary btn-lg" type="button" aria-label="Start from Level 1">
+          🚀 Start from Level 1
+        </button>
+      </div>
+    </main>
+
+    <!-- ══════════════════════════════════════════════════════
+       SCREEN: GAME
+       ══════════════════════════════════════════════════════ -->
+    <section id="screen-game" class="hidden" aria-label="Game screen">
+
+      <!-- HUD -->
+      <header id="game-hud" role="banner">
+        <div class="hud-level-info">
+          <span id="current-level-label" aria-live="polite">Level 1</span>
+          <span id="level-subtitle">Authentication</span>
+        </div>
+
+        <div class="hud-stats" role="status" aria-label="Game stats">
+          <div class="hud-stat">
+            <span class="hud-stat-label">Lives</span>
+            <div id="lives-display" aria-label="Lives remaining"></div>
+          </div>
+          <div class="hud-stat">
+            <span class="hud-stat-label">Score</span>
+            <span id="score-display" class="hud-stat-value" aria-live="polite">0</span>
+          </div>
+          <div class="hud-stat">
+            <span class="hud-stat-label">Streak</span>
+            <span id="streak-display" class="hud-stat-value" aria-live="polite">—</span>
+          </div>
+        </div>
+
+        <button id="btn-menu-go" class="btn btn-secondary btn-sm" type="button" aria-label="Return to main menu">
+          ← Menu
+        </button>
+      </header>
+
+      <!-- Two-Panel Body -->
+      <div id="game-body">
+
+        <!-- LEFT: Paper Pile / Character -->
+        <aside id="paper-panel" aria-label="Character and rejected papers">
+          <span class="panel-title" aria-hidden="true">Rejected Papers</span>
+          <div id="hangman-svg-container" role="img" aria-label="Character being buried under rejected form papers"
+            aria-live="polite"></div>
+        </aside>
+
+        <!-- RIGHT: Form Field -->
+        <article id="form-panel" aria-label="Form field to fill">
+
+          <!-- Scenario -->
+          <div id="scenario-card" role="note">
+            <span class="scenario-icon" aria-hidden="true">📋</span>
+            <p id="scenario-text"></p>
+          </div>
+
+          <!-- Progress -->
+          <div class="field-progress-wrap" aria-label="Field progress">
+            <div id="field-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+              <div id="field-progress-bar"></div>
+            </div>
+            <span id="field-counter" aria-live="polite">Field 1 of 3</span>
+          </div>
+
+          <!-- Field Card -->
+          <div id="field-card">
+
+            <div class="field-header">
+              <label id="field-label" for="field-input" style="cursor:pointer;">Field</label>
+              <span id="difficulty-badge" class="difficulty-badge diff-easy" aria-label="Difficulty">🟢 Easy</span>
+            </div>
+
+            <div id="field-input-area">
+              <input id="field-input" type="text" placeholder="..." autocomplete="off" spellcheck="false"
+                aria-labelledby="field-label" />
+            </div>
+
+            <!-- Hint Box (hidden by default) -->
+            <div id="hint-box" class="hidden" role="note" aria-label="Hint">
+              <pre id="hint-content"></pre>
+              <button id="btn-close-hint" type="button" aria-label="Close hint">✕</button>
+            </div>
+
+            <!-- Feedback -->
+            <div id="field-feedback" class="field-feedback" role="alert" aria-live="assertive"></div>
+
+            <!-- Submit -->
+            <div class="field-actions">
+              <button id="btn-submit-field" class="btn btn-primary" type="button" aria-label="Submit field answer">
+                Submit Answer ↵
+              </button>
+              <span id="field-points" aria-label="Points for this field">+100 pts</span>
+            </div>
+
+          </div><!-- /field-card -->
+        </article><!-- /form-panel -->
+
+      </div><!-- /game-body -->
+
+      <!-- Lifelines Bar -->
+      <footer id="lifelines-panel" role="toolbar" aria-label="Lifelines">
+        <span class="lifelines-label" aria-hidden="true">💡 Lifelines</span>
+
+        <button id="btn-show-rule" class="lifeline-btn" type="button" aria-label="Show validation rule (-30 pts)">
+          📖 Show Rule
+          <span class="ll-count" id="ll-rule-count" aria-label="remaining">3</span>
+        </button>
+
+        <button id="btn-show-format" class="lifeline-btn" type="button"
+          aria-label="Show valid format example (-30 pts)">
+          👁 Show Format
+          <span class="ll-count" id="ll-format-count" aria-label="remaining">3</span>
+        </button>
+
+        <button id="btn-skip" class="lifeline-btn" type="button" aria-label="Skip this field (no points)">
+          ⏭️ Skip Field
+          <span class="ll-count" id="ll-skip-count" aria-label="remaining">3</span>
+        </button>
+      </footer>
+
+    </section><!-- /screen-game -->
+
+    <!-- ══════════════════════════════════════════════════════
+       SCREEN: LEVEL COMPLETE
+       ══════════════════════════════════════════════════════ -->
+    <section id="screen-level-complete" class="hidden" aria-label="Level complete screen" aria-live="polite">
+      <div class="result-card card-complete">
+        <span class="result-emoji" aria-hidden="true">✅</span>
+        <h2 class="result-title" style="color: var(--green-400);">Level Complete!</h2>
+        <p id="complete-level-title" class="result-subtitle"></p>
+
+        <div class="result-stats" role="list">
+          <div class="result-stat-row" role="listitem">
+            <span>Level Bonus</span>
+            <span id="complete-bonus">+200 pts</span>
+          </div>
+          <div class="result-stat-row" role="listitem">
+            <span>Total Score</span>
+            <span id="complete-score">0</span>
+          </div>
+          <div class="result-stat-row" role="listitem">
+            <span>Lives Left</span>
+            <span id="complete-lives">❤️❤️❤️❤️❤️❤️</span>
+          </div>
+        </div>
+
+        <p id="complete-perfect" class="result-perfect" aria-live="polite"></p>
+
+        <div class="result-actions">
+          <button id="btn-next-level" class="btn btn-success btn-lg" type="button">Next Level →</button>
+          <button id="btn-menu-from-complete" class="btn btn-secondary" type="button" aria-label="Back to menu">←
+            Menu</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════
+       SCREEN: GAME OVER
+       ══════════════════════════════════════════════════════ -->
+    <section id="screen-game-over" class="hidden" aria-label="Game over screen" aria-live="assertive">
+      <div class="result-card card-gameover">
+        <span class="result-emoji" aria-hidden="true">📄</span>
+        <h2 class="result-title" style="color: var(--red-500);">Buried.</h2>
+        <p id="gameover-msg" class="result-subtitle"></p>
+
+        <div class="result-stats">
+          <div class="result-stat-row">
+            <span>Failed At</span>
+            <span id="gameover-level"></span>
+          </div>
+          <div class="result-stat-row">
+            <span>Score</span>
+            <span id="gameover-score" style="color: var(--gold-400);">0</span>
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <button id="btn-retry" class="btn btn-danger btn-lg" type="button">🔄 Retry Level</button>
+          <button id="btn-menu-from-over" class="btn btn-secondary" type="button">← Menu</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════════════════════════════════════════════
+       SCREEN: YOU WIN
+       ══════════════════════════════════════════════════════ -->
+    <section id="screen-win" class="hidden" aria-label="Victory screen" aria-live="polite">
+      <div class="result-card card-win">
+        <span class="result-emoji" aria-hidden="true">🏆</span>
+        <h2 class="result-title"
+          style="background: linear-gradient(135deg, var(--gold-400), white); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          FORMS CONQUERED!
+        </h2>
+        <p class="result-subtitle">You survived the full bureaucratic gauntlet. The pile never grew high enough to bury
+          you.</p>
+
+        <div class="result-stats">
+          <div class="result-stat-row">
+            <span>Levels Cleared</span>
+            <span id="win-levels" style="color: var(--green-400);">8 / 8</span>
+          </div>
+          <div class="result-stat-row">
+            <span>Final Score</span>
+            <span id="win-score" style="color: var(--gold-400); font-size: 1.3em;">0</span>
+          </div>
+        </div>
+
+        <div class="result-actions">
+          <button id="btn-play-again" class="btn btn-primary btn-lg" type="button">🔄 Play Again</button>
+          <button id="btn-menu-from-win" class="btn btn-secondary" type="button">← Menu</button>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /game-root -->
+
+  <!-- Scripts -->
+  <script src="js/fields.js"></script>
+  <script src="js/hangman.js"></script>
+  <script src="js/game.js"></script>
+
+</body>
+
+</html>
