@@ -1,6 +1,6 @@
 # Form or Fail — A Bureaucracy Hangman Game
 
-![Game Screenshot](./assets/screenshots/game-cover.png)
+![Game Screenshot](./assets/screenshots/cover.png)
 
 ## Overview
 
